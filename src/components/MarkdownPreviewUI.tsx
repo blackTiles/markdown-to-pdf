@@ -1,26 +1,32 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Eye } from "lucide-react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import MDEditor from "@uiw/react-md-editor";
+import { useReactToPrint } from "react-to-print";
 
 const MarkdownPreviewUI = ({
   theme,
-  printRef,
-  handlePrint,
 }: {
   theme: "light" | "dark";
-  printRef: React.RefObject<HTMLDivElement | null>;
-  handlePrint: () => void;
 }) => {
   const [markdown, setMarkdown] = useState("");
-
+  const printRef = useRef<HTMLDivElement>(null);
   const getPageMargins = () => {
     return `@page { margin: 0mm; size:auto; padding:13mm; }`;
   };
 
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: "Document",
+    pageStyle: "",
+  });
+
   return (
     <div className="bg-white">
-      <div className="container mx-auto p-6 flex gap-1 flex-col md:flex-row">
+      <p className="px-4 text-center text-sm text-gray-600">
+        Use Laaptop or Desktop for better experience. Mobile devices may not render the editor properly.
+      </p>
+      <div className="container mx-auto px-6 py-4 flex gap-1">
         {/* Editor Section */}
         <MDEditor
           value={markdown}
@@ -40,7 +46,7 @@ const MarkdownPreviewUI = ({
             <Eye className="inline w-4 h-4 mr-1" />
             Preview Markdown
           </h2>
-          <div className="w-full" ref={printRef}>
+          <div className="w-full" ref={printRef} id="preview-container">
             <style>{getPageMargins()}</style>
             <MarkdownPreview source={markdown} style={{ padding: 16 }} />
           </div>
